@@ -21,7 +21,7 @@ cp .env.local.example .env.local
 
 2. **Edit `.env.local` and add your values:**
 ```bash
-GITHUB_TOKEN=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
+GITHUB_TOKEN=your-github-token-here
 GITHUB_REPO=your-username/odowatch
 ```
 
