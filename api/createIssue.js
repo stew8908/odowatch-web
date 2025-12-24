@@ -81,8 +81,12 @@ export default async function handler(req, res) {
 
     if (githubRepo === 'your-username/odowatch') {
       console.error('GitHub repo not configured, using default');
+      const isVercel = !!process.env.VERCEL;
       res.status(500).json({ 
-        error: 'Server configuration error: GITHUB_REPO not set. Please set it in .env.local or Vercel environment variables.' 
+        error: 'Server configuration error: GITHUB_REPO not set.',
+        message: isVercel 
+          ? 'Please set GITHUB_REPO in Vercel Dashboard > Settings > Environment Variables and redeploy.'
+          : 'Please set GITHUB_REPO in .env.local file for local development.'
       });
       return;
     }
