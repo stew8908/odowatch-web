@@ -119,47 +119,54 @@ ${message}
 
     // Try to add labels, but don't fail if they don't exist
     // Labels will only be added if they exist in the repository
+    const apiUrl = `https://api.github.com/repos/${githubRepo}/issues`;
+    console.log('Attempting to create issue in repository:', githubRepo);
+    console.log('API URL:', apiUrl);
+    
     try {
       // First, try to create the issue with labels
-      const response = await fetch(
-        `https://api.github.com/repos/${githubRepo}/issues`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': authHeader,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json',
-            'User-Agent': 'OdoWatch-Contact-Form'
-          },
-          body: JSON.stringify({
-            ...issueData,
-            labels: ['contact-form', 'user-feedback']
-          })
-        }
-      );
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': authHeader,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+          'User-Agent': 'OdoWatch-Contact-Form'
+        },
+        body: JSON.stringify({
+          ...issueData,
+          labels: ['contact-form', 'user-feedback']
+        })
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('GitHub API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: errorData
+        });
         
         // If error is about labels, try again without labels
         if (errorData.errors && errorData.errors.some(err => err.code === 'invalid')) {
           console.log('Labels not found, creating issue without labels');
-          const retryResponse = await fetch(
-            `https://api.github.com/repos/${githubRepo}/issues`,
-            {
-              method: 'POST',
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
-                'User-Agent': 'OdoWatch-Contact-Form'
-              },
-              body: JSON.stringify(issueData)
-            }
-          );
+          const retryResponse = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': authHeader,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json',
+              'User-Agent': 'OdoWatch-Contact-Form'
+            },
+            body: JSON.stringify(issueData)
+          });
 
           if (!retryResponse.ok) {
             const retryErrorData = await retryResponse.json().catch(() => ({}));
+            console.error('Retry failed:', {
+              status: retryResponse.status,
+              errorData: retryErrorData
+            });
             throw new Error(retryErrorData.message || `GitHub API error: ${retryResponse.status} ${retryResponse.statusText}`);
           }
 
