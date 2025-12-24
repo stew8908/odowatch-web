@@ -194,16 +194,37 @@ ${message}
       throw fetchError;
     }
   } catch (error) {
-    console.error('Error creating GitHub issue:', {
+    // Enhanced error logging
+    const errorDetails = {
       message: error.message,
       stack: error.stack,
       githubRepo: process.env.GITHUB_REPO,
-      hasToken: !!process.env.GITHUB_TOKEN
-    });
+      hasToken: !!process.env.GITHUB_TOKEN,
+      isVercel: !!process.env.VERCEL,
+      nodeEnv: process.env.NODE_ENV
+    };
+    
+    console.error('Error creating GitHub issue:', errorDetails);
+    
+    // Provide more helpful error messages
+    let userMessage = error.message || 'Unknown error occurred';
+    
+    if (error.message.includes('Not Found')) {
+      userMessage = 'Repository not found. Please check that GITHUB_REPO is set correctly and the repository exists.';
+    } else if (error.message.includes('Bad credentials') || error.message.includes('401')) {
+      userMessage = 'GitHub authentication failed. Please check that GITHUB_TOKEN is valid.';
+    } else if (error.message.includes('403')) {
+      userMessage = 'GitHub API access denied. Please check token permissions.';
+    }
+    
     res.status(500).json({
       error: 'Failed to create issue',
-      message: error.message || 'Unknown error occurred',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      message: userMessage,
+      // Include more details in development
+      ...(process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development' ? {
+        details: error.message,
+        debug: errorDetails
+      } : {})
     });
   }
 }
