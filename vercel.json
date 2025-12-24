@@ -1,7 +1,6 @@
 {
   "buildCommand": "cd web && npm install && npm run build",
   "outputDirectory": "web/public",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./web ./api",
   "rewrites": [
     {
       "source": "/(.*)",
