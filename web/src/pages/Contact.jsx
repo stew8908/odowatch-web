@@ -34,7 +34,15 @@ function Contact() {
         body: JSON.stringify(formData),
       })
 
-      const data = await response.json()
+      // Check if response is ok before trying to parse JSON
+      let data;
+      try {
+        data = await response.json()
+      } catch (jsonError) {
+        // If response is not JSON, get text instead
+        const text = await response.text()
+        throw new Error(`Server error: ${response.status} ${response.statusText}. ${text}`)
+      }
 
       if (response.ok) {
         setStatus({
@@ -43,14 +51,23 @@ function Contact() {
         })
         setFormData({ name: '', email: '', subject: '', message: '' })
       } else {
-        throw new Error(data.error || 'Failed to submit form')
+        // Show the actual error message from the server
+        const errorMessage = data.message || data.error || `Server error: ${response.status}`
+        throw new Error(errorMessage)
       }
     } catch (error) {
+      // Show more detailed error message for debugging
+      const errorMessage = error.message || 'Unknown error occurred'
       setStatus({
         type: 'error',
-        message: 'Sorry, there was an error submitting your message. Please try again later or contact us directly.'
+        message: `Sorry, there was an error submitting your message: ${errorMessage}. Please check the console for more details or contact us directly.`
       })
       console.error('Error submitting form:', error)
+      console.error('Full error details:', {
+        message: error.message,
+        stack: error.stack,
+        config: config.apiUrl
+      })
     } finally {
       setIsSubmitting(false)
     }

@@ -48,13 +48,20 @@ ${message}
 ---
 *This issue was automatically created from the OdoWatch contact form.*`;
 
+    // Determine authorization header format
+    // Fine-grained tokens start with github_pat_ and use Bearer
+    // Classic tokens use token
+    const authHeader = githubToken.startsWith('github_pat_') 
+      ? `Bearer ${githubToken}`
+      : `token ${githubToken}`;
+
     // Create GitHub issue using fetch (Node.js 18+)
     const response = await fetch(
       `https://api.github.com/repos/${githubRepo}/issues`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `token ${githubToken}`,
+          'Authorization': authHeader,
           'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json',
           'User-Agent': 'OdoWatch-Contact-Form'
