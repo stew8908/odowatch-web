@@ -4,8 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Load .env.local if it exists (for local development)
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// Load .env.local if it exists (for local development only)
+// On Vercel, environment variables are automatically loaded from dashboard settings
+if (!process.env.VERCEL) {
   try {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
@@ -65,12 +66,18 @@ export default async function handler(req, res) {
     const githubToken = process.env.GITHUB_TOKEN;
     const githubRepo = process.env.GITHUB_REPO || 'your-username/odowatch';
 
-    // Debug logging (remove in production)
+    // Debug logging
     console.log('Environment check:', {
       hasToken: !!githubToken,
       tokenPrefix: githubToken ? githubToken.substring(0, 15) + '...' : 'none',
       githubRepo: githubRepo,
-      allEnvKeys: Object.keys(process.env).filter(k => k.includes('GITHUB'))
+      isVercel: !!process.env.VERCEL,
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('GITHUB')),
+      // Show actual values in development for debugging (never in production)
+      ...(process.env.VERCEL_ENV === 'development' ? {
+        tokenValue: githubToken,
+        repoValue: githubRepo
+      } : {})
     });
 
     if (!githubToken) {
