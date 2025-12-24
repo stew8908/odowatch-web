@@ -1,0 +1,52 @@
+# Vercel ignore file - excludes files from deployment and file watching
+# This helps prevent "too many open files" errors
+
+# iOS build artifacts
+ios/
+ios/**/*
+
+# Android build artifacts
+android/
+android/**/*
+
+# Node modules (except web)
+node_modules/
+**/node_modules/
+
+# Build outputs
+public/
+dist/
+build/
+*.log
+
+# Expo files
+.expo/
+.expo-shared/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (already handled separately)
+.env.local
+.env.*.local
+
+# React Native
+*.xcodeproj
+*.xcworkspace
+Podfile.lock
+
+# Only watch what we need
+!web/
+!api/
+!vercel.json
+!.vercelignore
+
