@@ -25,8 +25,8 @@ function Contact() {
     setStatus({ type: '', message: '' })
 
     try {
-      // Call Firebase Cloud Function to create GitHub issue
-      const response = await fetch(config.functionsUrl, {
+      // Call Vercel serverless function to create GitHub issue
+      const response = await fetch(config.apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

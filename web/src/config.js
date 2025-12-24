@@ -1,11 +1,10 @@
 // Configuration for the OdoWatch website
-// Update these values based on your Firebase project
+// The API endpoint will be automatically available at /api/createIssue when deployed to Vercel
 
 export const config = {
-  // Firebase Functions URL for creating GitHub issues
-  // Replace 'your-project-id' with your actual Firebase project ID
-  // Format: https://us-central1-PROJECT_ID.cloudfunctions.net/createIssue
-  functionsUrl: import.meta.env.VITE_FUNCTIONS_URL || 
-    'https://us-central1-your-project-id.cloudfunctions.net/createIssue'
+  // API endpoint for creating GitHub issues
+  // In development, this will use the Vercel dev server
+  // In production, this will use the deployed Vercel function
+  apiUrl: import.meta.env.VITE_API_URL || '/api/createIssue'
 }
 

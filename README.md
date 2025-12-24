@@ -1,6 +1,6 @@
 # OdoWatch Website
 
-This is the website for the OdoWatch iOS app, hosted on Firebase.
+This is the website for the OdoWatch iOS app, hosted on Vercel.
 
 ## Features
 
@@ -13,8 +13,8 @@ This is the website for the OdoWatch iOS app, hosted on Firebase.
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- Firebase CLI (`npm install -g firebase-tools`)
-- Firebase project created
+- Vercel account (free tier available)
+- GitHub account with a personal access token
 
 ### Installation
 
@@ -24,64 +24,50 @@ cd web
 npm install
 ```
 
-2. Install dependencies for Firebase Functions:
+2. Run the development server:
 ```bash
-cd ../functions
-npm install
+npm run dev
 ```
 
-3. Build the web app:
+Or from the root directory:
 ```bash
-cd ../web
-npm run build
+yarn web
 ```
 
-### Firebase Configuration
+### Vercel Configuration
 
-1. Login to Firebase:
+1. Install Vercel CLI (optional, for local development):
 ```bash
-firebase login
+npm install -g vercel
 ```
 
-2. Initialize Firebase (if not already done):
-```bash
-firebase init
-```
+2. Deploy to Vercel:
+   - **Option A: Using Vercel Dashboard (Recommended)**
+     - Go to [vercel.com](https://vercel.com)
+     - Click "New Project"
+     - Import your Git repository
+     - Vercel will auto-detect the settings
+     - Add environment variables (see below)
+     - Deploy!
 
-3. Update `.firebaserc` with your Firebase project ID:
-```json
-{
-  "projects": {
-    "default": "your-actual-project-id"
-  }
-}
-```
+   - **Option B: Using Vercel CLI**
+     ```bash
+     vercel
+     ```
 
-4. Set GitHub credentials for the contact form:
-```bash
-firebase functions:config:set github.token="your-github-personal-access-token"
-firebase functions:config:set github.repo="your-username/odowatch"
-```
+3. Set Environment Variables in Vercel Dashboard:
+   - Go to your project settings > Environment Variables
+   - Add the following:
+     - `GITHUB_TOKEN`: Your GitHub personal access token
+     - `GITHUB_REPO`: Your repository in format `username/repo-name` (e.g., `brandonroth/odowatch`)
 
-To get a GitHub personal access token:
-- Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
-- Generate a new token with `repo` scope
-- Use this token in the command above
-
-5. Deploy Firebase Functions first to get the function URL:
-```bash
-firebase deploy --only functions
-```
-
-6. Update the Functions URL in the web app:
-   - After deploying, note the function URL from the output (e.g., `https://us-central1-PROJECT_ID.cloudfunctions.net/createIssue`)
-   - Create a `.env` file in the `web/` directory:
-   ```bash
-   cd web
-   cp .env.example .env
-   ```
-   - Edit `.env` and replace `your-project-id` with your actual Firebase project ID
-   - Or update `web/src/config.js` directly with the correct URL
+   To get a GitHub personal access token:
+   - **Classic Token**: Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
+     - Generate a new token with `repo` scope (required - there's no standalone "issues" scope)
+   - **Fine-Grained Token**: Go to GitHub Settings > Developer settings > Personal access tokens
+     - Generate new token (fine-grained)
+     - Set repository permissions: Issues → Read and write
+   - Copy the token and add it to Vercel environment variables
 
 ### Development
 
@@ -91,33 +77,19 @@ cd web
 npm run dev
 ```
 
-2. For testing Firebase Functions locally:
+2. For testing the API locally, use Vercel CLI:
 ```bash
-cd functions
-npm run serve
+vercel dev
 ```
+
+This will start both the frontend and API functions locally.
 
 ### Deployment
 
-1. Build the web app:
-```bash
-cd web
-npm run build
-```
+The site will automatically deploy when you push to your connected Git repository. You can also deploy manually:
 
-2. Deploy to Firebase:
 ```bash
-firebase deploy
-```
-
-Or deploy only hosting:
-```bash
-firebase deploy --only hosting
-```
-
-Or deploy only functions:
-```bash
-firebase deploy --only functions
+vercel --prod
 ```
 
 ## Project Structure
@@ -130,17 +102,28 @@ firebase deploy --only functions
 │   │   ├── pages/       # Page components
 │   │   └── ...
 │   └── package.json
-├── functions/           # Firebase Cloud Functions
-│   └── index.js        # GitHub issue creation function
+├── api/                 # Vercel serverless functions
+│   └── createIssue.js   # GitHub issue creation function
 ├── public/             # Built static files (generated)
-├── firebase.json       # Firebase configuration
-└── .firebaserc        # Firebase project configuration
+├── vercel.json         # Vercel configuration
+└── README.md
 ```
 
 ## Contact Form
 
 The contact form creates GitHub issues automatically. Make sure to:
-1. Set up the GitHub token and repository in Firebase Functions config
+1. Set up the GitHub token and repository in Vercel environment variables
 2. The repository should have issues enabled
 3. The token needs `repo` scope to create issues
 
+## Free Hosting with Vercel
+
+Vercel offers a generous free tier that includes:
+- Unlimited deployments
+- Automatic HTTPS
+- Global CDN
+- Serverless functions (100GB-hours/month)
+- Custom domains
+- No credit card required
+
+Perfect for hosting this website!
